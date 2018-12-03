@@ -1,35 +1,62 @@
 <template>
-  <section class="container">
-    <div>
-      <logo/>
-      <h1 class="title">
-        portwarden-frontend
-      </h1>
-      <h2 class="subtitle">
-        My kryptonian Nuxt.js project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green">Documentation</a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey">GitHub</a>
-      </div>
-    </div>
-  </section>
+  <v-app dark>
+    <v-content>
+      <v-container 
+        fluid >
+        <v-layout
+          row
+          wrap>
+          <v-flex xs12>
+            <div class="display-3">
+              Portwarden
+            </div>
+            <div class="subheading mt-2">
+              Automatic Backup Bitwarden Vault to Your Google Drive
+            </div>
+            <div class="mt-5">
+              <v-btn 
+                class="grey" 
+                large
+                href="https://github.com/vwxyzjn/portwarden">&nbsp;&nbsp;&nbsp;&nbsp;Github&nbsp;&nbsp;&nbsp;&nbsp;</v-btn>
+              <v-btn 
+                class="green" 
+                large
+                @click="loginThroughGoogle">Get Started</v-btn>
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
-
-export default {
-  components: {
-    Logo
-  }
-}
+import axios from 'axios'
+import Vue from 'vue'
+export default Vue.extend({
+  created () {
+    axios.defaults.baseURL = this.$store.state.serverUrl
+  },
+  mounted() {
+    this.loginThroughGoogle()
+  },
+  methods: {
+    loginThroughGoogle(){
+      axios({
+        method: 'get',
+        url: '/gdrive/loginUrl',
+      })
+        .then(function (response) {
+          // handle success
+          console.log(response)
+        })
+        .catch(function (response) {
+          // handle error
+          console.log(response)
+        })
+    }
+  },
+})
 </script>
 
 <style>
