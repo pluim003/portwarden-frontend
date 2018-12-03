@@ -11,7 +11,7 @@
               Portwarden
             </div>
             <div class="subheading mt-2">
-              Automatic Backup Bitwarden Vault to Your Google Drive
+              🔥 Automatic Backup Bitwarden Vault to Your Google Drive 🔥
             </div>
             <div class="mt-5">
               <v-btn 

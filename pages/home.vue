@@ -27,6 +27,7 @@
                   color="red"
                 />
                 <v-divider class="mt-4"/>
+                <v-subheader class="pa-0">Welcome user {{ pu.email }}</v-subheader>
                 <v-subheader class="pa-0">Please Enter Your Backup Preferences</v-subheader>
                 <v-text-field
                   v-model="pu.backup_setting.passphrase"
@@ -53,10 +54,14 @@
                   @click="setupAutomaticBackup()">Setup Automatic Backup</v-btn>
               </v-card-text>
               <v-card-text v-else>
-                <v-subheader class="pa-0">You have already registered with our system</v-subheader>
+                <v-subheader class="pa-0 mb-4">
+                  Greetings User {{ pu.email }}. You have already registered with our system. 
+                  You may cancel the automatic backup by clicking the button below.
+                </v-subheader>
                 <v-btn  
                   color="red"
-                  block>Cancel My Automatic Backup</v-btn>
+                  block
+                  @click="cancelAutomaticBackup()">Cancel My Automatic Backup</v-btn>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -117,20 +122,50 @@ export default Vue.extend({
     let urlParams = new URLSearchParams(window.location.search);
     this.access_token = urlParams.get('access_token');
     this.pu.email = urlParams.get('email');
+    this.pu.backup_setting.will_setup_backup = urlParams.get('will_setup_backup');
     console.log(this.access_token)
     console.log(this.pu)
   },
   methods: {
     setupAutomaticBackup(){
       let self = this
+      self.pu.bitwarden_login_credentials.method = parseInt(self.pu.bitwarden_login_credentials.method)
+
+      
       let authString = 'Bearer '.concat(self.access_token)
       var xhr = new XMLHttpRequest();
-      xhr.open("POST", this.$store.state.serverUrl+'/encrypt', true);
+      xhr.open("POST", self.$store.state.serverUrl+'/encrypt', true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Authorization', authString);
-      self.pu.bitwarden_login_credentials.method = parseInt(self.pu.bitwarden_login_credentials.method)
       xhr.send(JSON.stringify(self.pu));
       console.log(xhr)
+      xhr.onreadystatechange = function () {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+          alert(xhr.responseText);
+        } else {
+          alert("something went wrong")
+        }
+      };
+    },
+    cancelAutomaticBackup(){
+      let self = this
+      let pu_copy = JSON.parse(JSON.stringify(self.pu))
+      pu_copy.backup_setting.will_setup_backup = false
+      pu_copy.bitwarden_login_credentials.method = parseInt(pu_copy.bitwarden_login_credentials.method)
+      
+      let authString = 'Bearer '.concat(self.access_token)
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", self.$store.state.serverUrl+'/encrypt/cancel', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Authorization', authString);
+      xhr.send(JSON.stringify(pu_copy));
+      console.log(xhr)
+      xhr.onreadystatechange = function () {
+        if(xhr.readyState === 4 && xhr.status === 200) {
+          alert(xhr.responseText);
+          document.location.href="/";
+        }
+      };
     }
   },
 })
