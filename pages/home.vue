@@ -12,7 +12,7 @@
             md6>
             <v-card>
               <v-card-title class="headline font-weight-regular red white--text">Portwarden</v-card-title>
-              <v-card-text>
+              <v-card-text v-if="!pu.backup_setting.will_setup_backup">
                 <v-subheader class="pa-0">Please Enter Your Bitwarden Credentials</v-subheader>
                 <v-text-field
                   v-model="pu.bitwarden_login_credentials.email"
@@ -34,6 +34,29 @@
                   required
                   color="red"
                 />
+                <v-select
+                  :items="twofa_options"
+                  v-model="pu.bitwarden_login_credentials.method"
+                  item-text="method"
+                  item-value="code"
+                  label="2FA Options"
+                />
+                <v-text-field
+                  v-model="pu.bitwarden_login_credentials.code"
+                  label="2FA Code"
+                  required
+                  color="red"
+                />
+                <v-btn  
+                  color="red"
+                  block
+                  @click="setupAutomaticBackup()">Setup Automatic Backup</v-btn>
+              </v-card-text>
+              <v-card-text v-else>
+                <v-subheader class="pa-0">You have already registered with our system</v-subheader>
+                <v-btn  
+                  color="red"
+                  block>Cancel My Automatic Backup</v-btn>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -49,12 +72,12 @@ var pu = {
     bitwarden_login_credentials: {
         email:    "",
         password: "",
-        method:   0,
+        method:   "100",
         code:     "",
     },
     backup_setting:              {
       passphrase:               "",
-      backup_frequency_seconds: 0,
+      backup_frequency_seconds: 60,
       will_setup_backup:        false,
   }
 }
@@ -65,7 +88,26 @@ export default Vue.extend({
   data() {
     return {
       pu: pu,
-      access_token: ""
+      access_token: "",
+      twofa_options: [
+        {
+          method: 'None',
+          code: '100'
+        },
+        {
+          method: 'Authenticator',
+          code: '0'
+        },
+        {
+          method: 'Email',
+          code: '1'
+        },
+        {
+          method: 'Yubikey',
+          code: '3'
+        }
+      ],
+      twofa_code: ""
     }
   },
   created () {
@@ -75,22 +117,20 @@ export default Vue.extend({
     let urlParams = new URLSearchParams(window.location.search);
     this.access_token = urlParams.get('access_token');
     this.pu.email = urlParams.get('email');
+    console.log(this.access_token)
     console.log(this.pu)
   },
   methods: {
-    loginThroughGoogle(){
-      axios({
-        method: 'get',
-        url: '/gdrive/loginUrl',
-      })
-        .then(function (response) {
-          // handle success
-          console.log(response)
-        })
-        .catch(function (response) {
-          // handle error
-          console.log(response)
-        })
+    setupAutomaticBackup(){
+      let self = this
+      let authString = 'Bearer '.concat(self.access_token)
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", this.$store.state.serverUrl+'/encrypt', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Authorization', authString);
+      self.pu.bitwarden_login_credentials.method = parseInt(self.pu.bitwarden_login_credentials.method)
+      xhr.send(JSON.stringify(self.pu));
+      console.log(xhr)
     }
   },
 })

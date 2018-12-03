@@ -19,9 +19,9 @@
                 large
                 href="https://github.com/vwxyzjn/portwarden">&nbsp;&nbsp;&nbsp;&nbsp;Github&nbsp;&nbsp;&nbsp;&nbsp;</v-btn>
               <v-btn 
-                class="green" 
-                large
-                @click="loginThroughGoogle">Get Started</v-btn>
+                :href="loginUrl" 
+                class="green"
+                large>Get Started</v-btn>
             </div>
           </v-flex>
         </v-layout>
@@ -34,6 +34,11 @@
 import axios from 'axios'
 import Vue from 'vue'
 export default Vue.extend({
+  data() {
+    return {
+      loginUrl: ""
+    }
+  },
   created () {
     axios.defaults.baseURL = this.$store.state.serverUrl
   },
@@ -42,6 +47,7 @@ export default Vue.extend({
   },
   methods: {
     loginThroughGoogle(){
+      let self = this
       axios({
         method: 'get',
         url: '/gdrive/loginUrl',
@@ -49,11 +55,13 @@ export default Vue.extend({
         .then(function (response) {
           // handle success
           console.log(response)
+          self.loginUrl = response.data.login_url
         })
         .catch(function (response) {
           // handle error
           console.log(response)
         })
+      console.log(this.loginUrl)
     }
   },
 })
