@@ -1,20 +1,22 @@
-FROM node:7.8.0-alpine
-
-# Create app directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-
-# Install app dependencies
-RUN apk update && apk upgrade && apk add git
-
-ONBUILD COPY . /usr/src/app/
-ONBUILD RUN npm install
-
-# Build app
-ONBUILD RUN npm run build
-
+# ---- Base Node ----
+FROM alpine:3.5 AS base
+# install node
+RUN apk add --no-cache nodejs-current tini
+# set working directory
+WORKDIR /root/chat
+# Set tini as entrypoint
+ENTRYPOINT ["/sbin/tini", "--"]
+# copy project file
+COPY package.json .
+ 
+#
+# ---- Dependencies ----
+FROM node:8.14.0-alpine AS release
+# install node packages
+RUN npm set progress=false && npm config set depth 0
+COPY . .
+RUN npm install
+RUN npm build
 ENV HOST 0.0.0.0
-EXPOSE 3000
-
-# start command
-CMD [ "npm", "start" ]
+EXPOSE 8000
+CMD npm run start
