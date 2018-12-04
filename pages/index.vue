@@ -25,7 +25,7 @@
               required
               color="green"
               autofocus
-              @input="updateMessage"
+              @change="updateMessage"
             />
           </v-flex>
           <v-flex xs12>
@@ -55,15 +55,12 @@ export default Vue.extend({
       loginUrl: ""
     }
   },
-  created () {
-    axios.defaults.baseURL = this.$store.state.serverUrl
-  },
   methods: {
     loginThroughGoogle(){
       let self = this
       axios({
         method: 'get',
-        url: '/gdrive/loginUrl',
+        url: this.$store.state.serverUrl + '/gdrive/loginUrl',
       })
         .then(function (response) {
           // handle success
@@ -77,8 +74,8 @@ export default Vue.extend({
         })
       console.log(this.loginUrl)
     },
-    updateMessage (e) {
-      this.$store.commit('updateMessage', e.target.value)
+    updateMessage (str) {
+      this.$store.commit('updateMessage', str)
     }
   },
 })

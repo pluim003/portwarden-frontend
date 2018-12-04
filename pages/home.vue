@@ -19,7 +19,7 @@
                   required
                   color="green"
                   autofocus
-                  @input="updateMessage"
+                  @change="updateMessage"
                 />
                 <v-subheader class="pa-0">Welcome user {{ pu.email }}. Please Enter Your Bitwarden Credentials</v-subheader>
                 <v-text-field
@@ -177,6 +177,9 @@ export default Vue.extend({
           document.location.href="/";
         }
       };
+    },
+    updateMessage (str) {
+      this.$store.commit('updateMessage', str)
     }
   },
 })
