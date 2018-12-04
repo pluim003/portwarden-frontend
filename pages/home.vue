@@ -13,6 +13,14 @@
             <v-card>
               <v-card-title class="headline font-weight-regular red white--text">Portwarden</v-card-title>
               <v-card-text v-if="!pu.backup_setting.will_setup_backup">
+                <v-text-field
+                  :value="$store.state.serverUrl"
+                  label="Enter Your Portwarden URL"
+                  required
+                  color="green"
+                  autofocus
+                  @input="updateMessage"
+                />
                 <v-subheader class="pa-0">Welcome user {{ pu.email }}. Please Enter Your Bitwarden Credentials</v-subheader>
                 <v-text-field
                   v-model="pu.bitwarden_login_credentials.email"

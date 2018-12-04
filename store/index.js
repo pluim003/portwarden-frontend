@@ -3,11 +3,11 @@ import Vuex from 'vuex'
 const createStore = () => {
   return new Vuex.Store({
     state: () => ({
-      serverUrl: 'http://192.168.0.164:32222'
+      serverUrl: 'http://localhost:5000'
     }),
     mutations: {
-      increment (state) {
-        state.counter++
+      updateMessage (state, message) {
+        state.serverUrl = message
       }
     }
   })

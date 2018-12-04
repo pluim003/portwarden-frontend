@@ -5,7 +5,8 @@
         fluid >
         <v-layout
           row
-          wrap>
+          wrap
+          justify-center>
           <v-flex xs12>
             <div class="display-3">
               Portwarden
@@ -13,15 +14,30 @@
             <div class="subheading mt-2">
               🔥 Automatic Backup Bitwarden Vault to Your Google Drive 🔥
             </div>
+          </v-flex>
+          <v-flex 
+            xs12 
+            md6
+            class="my-4">
+            <v-text-field
+              :value="$store.state.serverUrl"
+              label="Enter Your Portwarden URL"
+              required
+              color="green"
+              autofocus
+              @input="updateMessage"
+            />
+          </v-flex>
+          <v-flex xs12>
             <div class="mt-5">
               <v-btn 
                 class="grey" 
                 large
                 href="https://github.com/vwxyzjn/portwarden">&nbsp;&nbsp;&nbsp;&nbsp;Github&nbsp;&nbsp;&nbsp;&nbsp;</v-btn>
               <v-btn 
-                :href="loginUrl" 
                 class="green"
-                large>Get Started</v-btn>
+                large
+                @click="loginThroughGoogle">Get Started</v-btn>
             </div>
           </v-flex>
         </v-layout>
@@ -42,9 +58,6 @@ export default Vue.extend({
   created () {
     axios.defaults.baseURL = this.$store.state.serverUrl
   },
-  mounted() {
-    this.loginThroughGoogle()
-  },
   methods: {
     loginThroughGoogle(){
       let self = this
@@ -56,12 +69,16 @@ export default Vue.extend({
           // handle success
           console.log(response)
           self.loginUrl = response.data.login_url
+          document.location.href=self.loginUrl
         })
         .catch(function (response) {
           // handle error
           console.log(response)
         })
       console.log(this.loginUrl)
+    },
+    updateMessage (e) {
+      this.$store.commit('updateMessage', e.target.value)
     }
   },
 })
