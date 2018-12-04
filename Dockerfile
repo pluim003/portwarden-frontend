@@ -15,8 +15,8 @@ FROM node:8.14.0-alpine AS release
 # install node packages
 RUN npm set progress=false && npm config set depth 0
 COPY . .
-RUN npm install
-RUN npm build
+RUN npm install --only=production 
+RUN npm run build
 EXPOSE 8000
 CMD npm run start
  
