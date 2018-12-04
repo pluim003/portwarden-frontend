@@ -13,7 +13,7 @@
             <v-card>
               <v-card-title class="headline font-weight-regular red white--text">Portwarden</v-card-title>
               <v-card-text v-if="!pu.backup_setting.will_setup_backup">
-                <v-subheader class="pa-0">Please Enter Your Bitwarden Credentials</v-subheader>
+                <v-subheader class="pa-0">Welcome user {{ pu.email }}. Please Enter Your Bitwarden Credentials</v-subheader>
                 <v-text-field
                   v-model="pu.bitwarden_login_credentials.email"
                   label="E-mail"
@@ -27,7 +27,6 @@
                   color="red"
                 />
                 <v-divider class="mt-4"/>
-                <v-subheader class="pa-0">Welcome user {{ pu.email }}</v-subheader>
                 <v-subheader class="pa-0">Please Enter Your Backup Preferences</v-subheader>
                 <v-text-field
                   v-model="pu.backup_setting.passphrase"
@@ -122,7 +121,7 @@ export default Vue.extend({
     let urlParams = new URLSearchParams(window.location.search);
     this.access_token = urlParams.get('access_token');
     this.pu.email = urlParams.get('email');
-    this.pu.backup_setting.will_setup_backup = urlParams.get('will_setup_backup');
+    this.pu.backup_setting.will_setup_backup = (urlParams.get('will_setup_backup') == 'true')
     console.log(this.access_token)
     console.log(this.pu)
   },
@@ -130,20 +129,24 @@ export default Vue.extend({
     setupAutomaticBackup(){
       let self = this
       self.pu.bitwarden_login_credentials.method = parseInt(self.pu.bitwarden_login_credentials.method)
-
+      let pu_copy = JSON.parse(JSON.stringify(self.pu))
+      pu_copy.backup_setting.will_setup_backup = true
       
       let authString = 'Bearer '.concat(self.access_token)
       var xhr = new XMLHttpRequest();
       xhr.open("POST", self.$store.state.serverUrl+'/encrypt', true);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.setRequestHeader('Authorization', authString);
-      xhr.send(JSON.stringify(self.pu));
+      xhr.send(JSON.stringify(pu_copy));
       console.log(xhr)
       xhr.onreadystatechange = function () {
-        if(xhr.readyState === 4 && xhr.status === 200) {
-          alert(xhr.responseText);
-        } else {
-          alert("something went wrong")
+        if(xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            alert("successfully setup backup");
+            self.pu.backup_setting.will_setup_backup = true
+          } else {
+            alert("something went wrong")
+          }
         }
       };
     },
