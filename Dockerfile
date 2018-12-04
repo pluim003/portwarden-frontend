@@ -22,7 +22,7 @@ RUN npm install
  
 #
 # ---- Release ----
-FROM base AS release
+FROM node:8.14.0-alpine AS release
 # copy production node_modules
 COPY --from=dependencies /root/chat/prod_node_modules ./node_modules
 # copy app sources
