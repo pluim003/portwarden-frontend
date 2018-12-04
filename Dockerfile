@@ -26,6 +26,7 @@ RUN npm build
 FROM node:8.14.0-alpine AS release
 # copy production node_modules
 COPY --from=dependencies /root/chat/prod_node_modules ./node_modules
+COPY --from=dependencies /root/chat/dist ./dist
 # copy app sources
 COPY . .
 # expose port and define CMD
