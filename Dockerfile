@@ -11,24 +11,12 @@ COPY package.json .
  
 #
 # ---- Dependencies ----
-FROM base AS dependencies
+FROM node:8.14.0-alpine AS release
 # install node packages
 RUN npm set progress=false && npm config set depth 0
-RUN npm install --only=production 
-# copy production node_modules aside
-RUN cp -R node_modules prod_node_modules
-# install ALL node_modules, including 'devDependencies'
+COPY . .
 RUN npm install
 RUN npm build
- 
-#
-# ---- Release ----
-FROM node:8.14.0-alpine AS release
-# copy production node_modules
-COPY --from=dependencies /root/chat/prod_node_modules ./node_modules
-COPY --from=dependencies /root/chat/.nuxt ./.nuxt
-# copy app sources
-COPY . .
-# expose port and define CMD
 EXPOSE 8000
 CMD npm run start
+ 
