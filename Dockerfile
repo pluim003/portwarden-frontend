@@ -9,7 +9,6 @@ ADD package.json package-lock.json ./
 RUN yarn --frozen-lockfile --non-interactive && node-clean
 
 ADD . ./
-RUN npm install
 RUN npm build
 
 FROM node:9.5-alpine
