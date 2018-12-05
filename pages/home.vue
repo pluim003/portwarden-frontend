@@ -30,9 +30,12 @@
                 />
                 <v-text-field
                   v-model="pu.bitwarden_login_credentials.password"
+                  :append-icon="passwordShow ? 'visibility_off' : 'visibility'"
+                  :type="passwordShow ? 'text' : 'password'"
                   label="Password"
                   required
                   color="red"
+                  @click:append="passwordShow = !passwordShow"
                 />
                 <v-select
                   :items="twofa_options"
@@ -43,17 +46,23 @@
                 />
                 <v-text-field
                   v-model="pu.bitwarden_login_credentials.code"
+                  :append-icon="twoFAShow ? 'visibility_off' : 'visibility'"
+                  :type="twoFAShow ? 'text' : 'password'"
                   label="2FA Code"
                   required
                   color="red"
+                  @click:append="twoFAShow = !twoFAShow"
                 />
                 <v-divider class="mt-4"/>
                 <v-subheader class="pa-0">Please Enter Your Backup Preferences</v-subheader>
                 <v-text-field
                   v-model="pu.backup_setting.passphrase"
+                  :append-icon="passphraseShow ? 'visibility_off' : 'visibility'"
+                  :type="passphraseShow ? 'text' : 'password'"
                   label="Passphrase (to encrypt the backups)"
                   required
                   color="red"
+                  @click:append="passphraseShow = !passphraseShow"
                 />
                 <v-text-field
                   v-model="pu.backup_setting.backup_frequency_seconds"
@@ -125,7 +134,10 @@ export default Vue.extend({
           code: '3'
         }
       ],
-      twofa_code: ""
+      twofa_code: "",
+      passwordShow: false,
+      passphraseShow: false,
+      twoFAShow: false
     }
   },
   created () {
