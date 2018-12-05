@@ -34,14 +34,6 @@
                   required
                   color="red"
                 />
-                <v-divider class="mt-4"/>
-                <v-subheader class="pa-0">Please Enter Your Backup Preferences</v-subheader>
-                <v-text-field
-                  v-model="pu.backup_setting.passphrase"
-                  label="Passphrase (to encrypt the backups)"
-                  required
-                  color="red"
-                />
                 <v-select
                   :items="twofa_options"
                   v-model="pu.bitwarden_login_credentials.method"
@@ -52,6 +44,20 @@
                 <v-text-field
                   v-model="pu.bitwarden_login_credentials.code"
                   label="2FA Code"
+                  required
+                  color="red"
+                />
+                <v-divider class="mt-4"/>
+                <v-subheader class="pa-0">Please Enter Your Backup Preferences</v-subheader>
+                <v-text-field
+                  v-model="pu.backup_setting.passphrase"
+                  label="Passphrase (to encrypt the backups)"
+                  required
+                  color="red"
+                />
+                <v-text-field
+                  v-model="pu.backup_setting.backup_frequency_seconds"
+                  label="Bacup Frequency in seconds (e.g. enter 3600 to backup every hours or 1296000 every 15 days)"
                   required
                   color="red"
                 />
@@ -85,11 +91,11 @@ var pu = {
         email:    "",
         password: "",
         method:   "100",
-        code:     "",
+        code:     "", 
     },
     backup_setting:              {
       passphrase:               "",
-      backup_frequency_seconds: 60,
+      backup_frequency_seconds: "60",
       will_setup_backup:        false,
   }
 }
@@ -136,10 +142,10 @@ export default Vue.extend({
   methods: {
     setupAutomaticBackup(){
       let self = this
-      self.pu.bitwarden_login_credentials.method = parseInt(self.pu.bitwarden_login_credentials.method)
       let pu_copy = JSON.parse(JSON.stringify(self.pu))
+      pu_copy.bitwarden_login_credentials.method = parseInt(pu_copy.bitwarden_login_credentials.method)
+      pu_copy.backup_setting.backup_frequency_seconds = parseInt(pu_copy.backup_setting.backup_frequency_seconds)
       pu_copy.backup_setting.will_setup_backup = true
-      
       let authString = 'Bearer '.concat(self.access_token)
       var xhr = new XMLHttpRequest();
       xhr.open("POST", self.$store.state.serverUrl+'/encrypt', true);
@@ -153,7 +159,7 @@ export default Vue.extend({
             alert("successfully setup backup");
             self.pu.backup_setting.will_setup_backup = true
           } else {
-            alert("something went wrong")
+            alert("something went wrong "+xhr.response)
           }
         }
       };
@@ -161,9 +167,9 @@ export default Vue.extend({
     cancelAutomaticBackup(){
       let self = this
       let pu_copy = JSON.parse(JSON.stringify(self.pu))
-      pu_copy.backup_setting.will_setup_backup = false
       pu_copy.bitwarden_login_credentials.method = parseInt(pu_copy.bitwarden_login_credentials.method)
-      
+      pu_copy.backup_setting.backup_frequency_seconds = parseInt(pu_copy.backup_setting.backup_frequency_seconds)
+      pu_copy.backup_setting.will_setup_backup = false
       let authString = 'Bearer '.concat(self.access_token)
       var xhr = new XMLHttpRequest();
       xhr.open("POST", self.$store.state.serverUrl+'/encrypt/cancel', true);
