@@ -21,7 +21,7 @@
             class="my-4">
             <v-text-field
               :value="$store.state.serverUrl"
-              label="Enter Your Portwarden URL"
+              label="Enter Your Portwarden Server URL"
               required
               color="green"
               autofocus

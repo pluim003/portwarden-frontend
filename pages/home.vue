@@ -15,7 +15,7 @@
               <v-card-text v-if="!pu.backup_setting.will_setup_backup">
                 <v-text-field
                   :value="$store.state.serverUrl"
-                  label="Enter Your Portwarden URL"
+                  label="Enter Your Portwarden Server URL"
                   required
                   color="green"
                   autofocus
@@ -104,7 +104,7 @@ var pu = {
     },
     backup_setting:              {
       passphrase:               "",
-      backup_frequency_seconds: "60",
+      backup_frequency_seconds: "1296000",
       will_setup_backup:        false,
   }
 }
